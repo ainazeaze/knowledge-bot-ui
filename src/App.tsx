@@ -1,5 +1,7 @@
+import { IngestView } from './views/IngestView'
+
 function App() {
-  return <div className="p-8">Knowledge Base</div>
+  return <IngestView />
 }
 
 export default App

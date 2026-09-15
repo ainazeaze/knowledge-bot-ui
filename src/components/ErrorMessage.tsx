@@ -1,4 +1,4 @@
-import { ApiError } from '../lib/api'
+import { errorText } from '../lib/errors'
 import { Button } from './Button'
 
 interface ErrorMessageProps {
@@ -6,17 +6,6 @@ interface ErrorMessageProps {
   /** Renders a retry affordance when provided. */
   onRetry?: () => void
   className?: string
-}
-
-/** Turn anything thrown into something worth showing a user. */
-export function errorText(error: unknown): string {
-  if (error instanceof ApiError) {
-    return error.isOffline
-      ? 'Could not reach the server. Check that the backend is running on port 8000.'
-      : error.message
-  }
-  if (error instanceof Error && error.message) return error.message
-  return 'Something went wrong.'
 }
 
 export function ErrorMessage({ error, onRetry, className = '' }: ErrorMessageProps) {

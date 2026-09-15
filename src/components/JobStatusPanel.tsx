@@ -1,6 +1,6 @@
 import type { JobPollingState } from '../hooks/useJobPolling'
 import type { JobResponse } from '../lib/api'
-import { errorText } from './ErrorMessage'
+import { errorText } from '../lib/errors'
 import { Spinner } from './Spinner'
 
 interface JobStatusPanelProps {

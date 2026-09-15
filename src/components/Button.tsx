@@ -29,6 +29,7 @@ export function Button({
   variant = 'primary',
   size = 'md',
   loading = false,
+  type = 'button',
   disabled,
   className = '',
   children,
@@ -36,6 +37,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
+      type={type}
       // `loading` is a busy state, not a permanent one — keep it focusable.
       disabled={disabled || loading}
       aria-busy={loading || undefined}

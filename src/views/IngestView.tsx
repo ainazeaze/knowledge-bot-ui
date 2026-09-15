@@ -8,6 +8,12 @@ import { ingestPdf, ingestText, ingestUrl } from '../lib/api'
 
 type Tab = 'text' | 'url' | 'pdf'
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
 const TABS: { id: Tab; label: string }[] = [
   { id: 'text', label: 'Paste text' },
   { id: 'url', label: 'From URL' },
@@ -58,6 +64,7 @@ export function IngestView({ onIngested }: IngestViewProps) {
       (tab === 'pdf' && file !== null))
 
   const submit = async () => {
+    if (!canSubmit) return
     setSubmitError(null)
     job.reset()
     setSubmitting(true)
@@ -112,11 +119,15 @@ export function IngestView({ onIngested }: IngestViewProps) {
         ))}
       </div>
 
-      <div
+      <form
         role="tabpanel"
         id={`${fieldId}-panel-${tab}`}
         aria-labelledby={`${fieldId}-tab-${tab}`}
         className="mt-6 flex flex-col gap-4"
+        onSubmit={(event) => {
+          event.preventDefault()
+          void submit()
+        }}
       >
         {tab === 'text' ? (
           <>
@@ -182,7 +193,7 @@ export function IngestView({ onIngested }: IngestViewProps) {
               {file ? file.name : 'Drop a PDF here, or choose one.'}
             </p>
             <p className="mt-1 text-xs text-faint">
-              {file ? `${(file.size / 1024 / 1024).toFixed(1)} MB` : 'PDF only'}
+              {file ? formatBytes(file.size) : 'PDF only'}
             </p>
             <Button
               variant="secondary"
@@ -197,7 +208,7 @@ export function IngestView({ onIngested }: IngestViewProps) {
         ) : null}
 
         <div className="flex items-center gap-3">
-          <Button onClick={submit} disabled={!canSubmit} loading={busy}>
+          <Button type="submit" disabled={!canSubmit} loading={busy}>
             {busy ? 'Adding…' : 'Add document'}
           </Button>
           {tab === 'text' && title.trim() === '' && text.trim() !== '' ? (
@@ -207,7 +218,7 @@ export function IngestView({ onIngested }: IngestViewProps) {
 
         {submitError ? <ErrorMessage error={submitError} /> : null}
         <JobStatusPanel state={job.state} job={job.job} error={job.error} />
-      </div>
+      </form>
     </div>
   )
 }

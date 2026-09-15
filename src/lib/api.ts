@@ -49,21 +49,36 @@ export interface DocumentListResponse {
 }
 
 /**
- * A failed request. `status` is 0 when the request never reached the server,
- * which is the common case in dev when the backend is not running.
+ * A failed request. `status` is 0 when no readable response came back; `reason`
+ * then says whether the server was down or answered in a way the browser hid.
  */
 export class ApiError extends Error {
   readonly status: number
+  readonly reason: 'http' | 'offline' | 'unreadable'
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, reason: ApiError['reason'] = 'http') {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.reason = reason
   }
 
   /** True when the backend was unreachable rather than returning an error. */
   get isOffline(): boolean {
-    return this.status === 0
+    return this.reason === 'offline'
+  }
+}
+
+/**
+ * A `no-cors` request resolves whenever the server answers at all, even when
+ * CORS headers are missing — so it separates "down" from "responded unreadably".
+ */
+async function isServerReachable(): Promise<boolean> {
+  try {
+    await fetch(`${BASE_URL}/`, { mode: 'no-cors', cache: 'no-store' })
+    return true
+  } catch {
+    return false
   }
 }
 
@@ -104,7 +119,16 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   } catch (error) {
     // Let genuine cancellations propagate so callers can ignore them.
     if (error instanceof DOMException && error.name === 'AbortError') throw error
-    throw new ApiError('Could not reach the server. Is the backend running?', 0)
+    // Unhandled server errors often skip the CORS middleware, so the browser
+    // reports them exactly like a dead server. Check which one this was.
+    if (await isServerReachable()) {
+      throw new ApiError(
+        'The server hit an unexpected error while handling this request.',
+        0,
+        'unreadable',
+      )
+    }
+    throw new ApiError('Could not reach the server. Is the backend running?', 0, 'offline')
   }
 
   if (!response.ok) {

@@ -14,12 +14,12 @@
   --color-line: oklch(0.305 0.012 262);
   --color-line-strong: oklch(0.395 0.014 262);
 
-  /* Text, brightest to faintest. `faint` lands at 3.3:1 on `raised` —
-     large text, disabled states and decoration only, never body copy. */
+  /* Text, brightest to faintest. Every step clears WCAG AA (4.5:1) on every
+     surface; `faint` is the floor, at 4.6:1 on `raised`. */
   --color-bright: oklch(0.97 0.003 262);
   --color-body: oklch(0.875 0.005 262);
   --color-muted: oklch(0.685 0.011 262);
-  --color-faint: oklch(0.545 0.013 262);
+  --color-faint: oklch(0.63 0.012 262);
 
   /* Accent — clears 4.5:1 on every surface (5.1:1 at worst, on `raised`). */
   --color-accent: oklch(0.655 0.158 258);

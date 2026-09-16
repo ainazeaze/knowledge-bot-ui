@@ -52,7 +52,7 @@ export function SearchView() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-10">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
       <header className="mb-6">
         <h1 className="text-lg font-semibold text-bright">Search</h1>
         <p className="mt-1 text-sm text-muted">
@@ -152,9 +152,16 @@ function Results({ response }: { response: SearchResponse }) {
         className="rounded-panel border border-accent-line bg-surface p-5"
       >
         <h2 className="text-xs font-medium tracking-wide text-accent uppercase">Answer</h2>
-        <div className="mt-3 text-[0.9375rem] leading-relaxed text-body">
-          <Markdown>{response.answer}</Markdown>
-        </div>
+        {response.answer.trim() ? (
+          <div className="mt-3 text-[0.9375rem] leading-relaxed text-body">
+            <Markdown>{response.answer}</Markdown>
+          </div>
+        ) : (
+          // The backend returns an empty answer when generation fails but retrieval worked.
+          <p className="mt-3 text-sm text-muted">
+            An answer couldn’t be generated this time. The matching sources are listed below.
+          </p>
+        )}
       </section>
 
       <section>
@@ -179,13 +186,15 @@ function SourceCard({ result }: { result: SearchResult }) {
   const lowRelevance = result.score < LOW_RELEVANCE_BELOW
 
   return (
-    <article
-      className={`rounded-lg border border-line bg-surface p-4 transition-colors hover:border-line-strong ${
-        lowRelevance ? 'opacity-60 hover:opacity-100' : ''
-      }`}
-    >
+    // Low-relevance cards step their text down a colour rather than using
+    // opacity, which would push them below AA contrast.
+    <article className="rounded-lg border border-line bg-surface p-4 transition-colors hover:border-line-strong">
       <div className="flex items-baseline justify-between gap-4">
-        <h3 className="truncate text-sm font-medium text-bright">{result.title}</h3>
+        <h3
+          className={`truncate text-sm font-medium ${lowRelevance ? 'text-muted' : 'text-bright'}`}
+        >
+          {result.title}
+        </h3>
         <div className="flex shrink-0 items-center gap-2">
           {lowRelevance ? <span className="text-xs text-faint">Low relevance</span> : null}
           <span
@@ -197,7 +206,9 @@ function SourceCard({ result }: { result: SearchResult }) {
         </div>
       </div>
       <p
-        className={`mt-2 text-sm leading-relaxed text-muted ${long && !expanded ? 'line-clamp-3' : ''}`}
+        className={`mt-2 text-sm leading-relaxed ${lowRelevance ? 'text-faint' : 'text-muted'} ${
+          long && !expanded ? 'line-clamp-3' : ''
+        }`}
       >
         {result.text}
       </p>

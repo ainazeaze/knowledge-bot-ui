@@ -71,7 +71,7 @@ export function DocumentsView({ refreshToken = 0 }: DocumentsViewProps) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-10">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
       <header className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-lg font-semibold text-bright">Documents</h1>

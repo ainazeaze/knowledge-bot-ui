@@ -71,14 +71,16 @@ function App() {
   }, [])
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-56 shrink-0 flex-col border-r border-line bg-surface">
-        <div className="flex items-center gap-2.5 px-5 py-5">
+    // Phones get a top bar with the nav in a row; from `md` up it becomes a
+    // sidebar that stays pinned while the content scrolls.
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <aside className="sticky top-0 z-10 flex shrink-0 flex-col border-b border-line bg-surface md:h-screen md:w-56 md:border-r md:border-b-0">
+        <div className="flex items-center gap-2.5 px-4 pt-3 pb-2 md:px-5 md:py-5">
           <img src="/favicon.svg" alt="" aria-hidden="true" className="size-6 rounded-md" />
           <span className="text-sm font-semibold text-bright">Knowledge Base</span>
         </div>
 
-        <nav aria-label="Sections" className="flex flex-col gap-0.5 px-3">
+        <nav aria-label="Sections" className="flex gap-1 px-2 pb-2 md:flex-col md:gap-0.5 md:px-3 md:pb-0">
           {NAV.map((item) => {
             const active = view === item.id
             return (
@@ -86,7 +88,7 @@ function App() {
                 key={item.id}
                 onClick={() => setView(item.id)}
                 aria-current={active ? 'page' : undefined}
-                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:flex-none md:justify-start md:gap-2.5 ${
                   active
                     ? 'bg-accent-soft font-medium text-bright'
                     : 'text-muted hover:bg-raised hover:text-body'
@@ -106,7 +108,7 @@ function App() {
           })}
         </nav>
 
-        <p className="mt-auto px-5 py-4 text-xs text-faint">
+        <p className="mt-auto hidden px-5 py-4 text-xs text-faint md:block">
           Retrieval-augmented search over your own documents.
         </p>
       </aside>

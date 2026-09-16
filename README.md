@@ -2,7 +2,9 @@
 
 A web interface for a retrieval-augmented (RAG) knowledge base. Add documents from text, URLs or PDFs, then ask questions and get an LLM-generated answer grounded in the passages it was drawn from.
 
-This repository is the frontend. It talks to the **knowledge-bot** backend, a FastAPI service that chunks, embeds and searches the documents.
+This repository is the frontend. It talks to the [**knowledge-bot**](https://github.com/ainazeaze/knowledge-bot) backend, a FastAPI service that chunks, embeds and searches the documents.
+
+![The Knowledge Base search screen](docs/search-empty.png)
 
 ## Features
 
@@ -26,7 +28,7 @@ No UI component library: buttons, form fields, tabs and the Markdown renderer ar
 ### Prerequisites
 
 - Node.js `20.19+` or `22.12+`
-- The knowledge-bot backend running locally, by default on `http://localhost:8000`
+- The [knowledge-bot](https://github.com/ainazeaze/knowledge-bot) backend running locally, by default on `http://localhost:8000`
 
 ### Install and run
 

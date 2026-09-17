@@ -184,6 +184,9 @@ function SourceCard({ result }: { result: SearchResult }) {
   const [expanded, setExpanded] = useState(false)
   const long = result.text.length > CLAMP_AFTER_CHARS
   const lowRelevance = result.score < LOW_RELEVANCE_BELOW
+  // URL-ingested documents use the URL as their title, so the source line
+  // would just repeat it.
+  const showSource = result.source !== '' && result.source !== result.title
 
   return (
     // Low-relevance cards step their text down a colour rather than using
@@ -222,7 +225,9 @@ function SourceCard({ result }: { result: SearchResult }) {
           {expanded ? 'Show less' : 'Show more'}
         </button>
       ) : null}
-      <p className="mt-3 truncate text-xs text-faint">{result.source}</p>
+      {showSource ? (
+        <p className="mt-3 truncate text-xs text-faint">{result.source}</p>
+      ) : null}
     </article>
   )
 }

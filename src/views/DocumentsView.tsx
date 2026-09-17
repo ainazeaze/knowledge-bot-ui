@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
 import { ErrorMessage } from '../components/ErrorMessage'
@@ -16,6 +17,24 @@ const DATE_FORMAT = new Intl.DateTimeFormat(undefined, {
 function formatAdded(value: string): string {
   const parsed = new Date(value)
   return Number.isNaN(parsed.getTime()) ? value : DATE_FORMAT.format(parsed)
+}
+
+/**
+ * Row metadata, skipping the source when it only repeats the title — which is
+ * what URL-ingested documents do.
+ */
+function metaParts(doc: DocumentItem): ReactNode[] {
+  const parts: ReactNode[] = []
+  if (doc.source !== '' && doc.source !== doc.title) {
+    parts.push(<span className="truncate">{doc.source}</span>)
+  }
+  parts.push(
+    <span>
+      {doc.total_chunks} chunk{doc.total_chunks === 1 ? '' : 's'}
+    </span>,
+  )
+  parts.push(<time dateTime={doc.added_at}>{formatAdded(doc.added_at)}</time>)
+  return parts
 }
 
 interface DocumentsViewProps {
@@ -120,13 +139,12 @@ export function DocumentsView({ refreshToken = 0 }: DocumentsViewProps) {
               <div className="min-w-0 flex-1">
                 <h2 className="truncate text-sm font-medium text-bright">{doc.title}</h2>
                 <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-faint">
-                  <span className="truncate">{doc.source}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>
-                    {doc.total_chunks} chunk{doc.total_chunks === 1 ? '' : 's'}
-                  </span>
-                  <span aria-hidden="true">·</span>
-                  <time dateTime={doc.added_at}>{formatAdded(doc.added_at)}</time>
+                  {metaParts(doc).map((part, index) => (
+                    <Fragment key={index}>
+                      {index > 0 ? <span aria-hidden="true">·</span> : null}
+                      {part}
+                    </Fragment>
+                  ))}
                 </p>
               </div>
 
